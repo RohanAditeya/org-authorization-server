@@ -1,0 +1,21 @@
+logging:
+  level:
+    root: INFO
+    com.auth.server: DEBUG
+
+server:
+  port: 8081
+
+spring:
+  sql:
+    init:
+      mode: always
+  datasource:
+    url: <url>
+    username: <username>
+    password: <password>
+
+jwt:
+  password: <password>
+  alias: <alias>
+  privateKey: <privateKeyFileName>.jks
