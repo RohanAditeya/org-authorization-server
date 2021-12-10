@@ -12,3 +12,7 @@ CREATE TABLE IF NOT EXISTS client_grant_type (id VARCHAR(40), client_id VARCHAR(
 
 -- client resources table
 CREATE TABLE IF NOT EXISTS client_resources (id VARCHAR(40), client_id VARCHAR(20) NOT NULL, resource_id VARCHAR(30) NOT NULL, PRIMARY KEY (id));
+
+-- insert sample values for user credentials
+--INSERT INTO user_details ("<usernmae>", "<password>", 1);
+--INSERT INTO user_roles ("<username>", "ROLE_ADMIN");
