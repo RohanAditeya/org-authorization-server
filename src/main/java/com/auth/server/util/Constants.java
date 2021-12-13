@@ -13,8 +13,8 @@ public enum Constants {
 
     private String value;
 
-    Constants(String grantType) {
-        this.value = grantType;
+    Constants(String value) {
+        this.value = value;
     }
 
     public String getValue() {

@@ -12,6 +12,8 @@ spring:
       keyspace-name: authorization_keyspace
       contact-points: localhost
       local-datacenter: datacenter1
+      request:
+        consistency: LOCAL_QUORUM
 jwt:
   password: <password>
   alias: <alias>

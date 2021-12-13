@@ -4,6 +4,8 @@ import com.auth.server.model.ClientDetailsModel;
 import com.auth.server.model.UserDetailsModel;
 import com.auth.server.repository.ClientDetailsCassandraDao;
 import com.auth.server.repository.UserDetailsCassandraDao;
+import com.auth.server.util.ApplicationException;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,23 +23,29 @@ public class CredentialsServiceImpl implements CredentialsService{
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDetailsModel getUserDetailsFromDb(String username) {
+    public UserDetailsModel getUserDetailsFromDb(String username) throws ApplicationException {
         UserDetailsModel record = userDetailsCassandraDao.findByUser(username);
+        if (record == null)
+            throw new ApplicationException("Requested username not found");
         return record;
     }
 
     @Override
-    public void onBoardUserCredentials(UserDetailsModel userDetails) {
+    public void onBoardUserCredentials(UserDetailsModel userDetails) throws ApplicationException {
         String BcryptPassword = passwordEncoder.encode(userDetails.getPassword());
         userDetails.setPassword(BcryptPassword);
-        userDetailsCassandraDao.save(userDetails);
+        ResultSet rs = userDetailsCassandraDao.save(userDetails);
+        if (!rs.wasApplied())
+            throw new ApplicationException("User record already exists");
     }
 
     @Override
-    public void onBoardClientDetails(ClientDetailsModel clientDetailsModel) {
+    public void onBoardClientDetails(ClientDetailsModel clientDetailsModel) throws ApplicationException {
         String BcryptPassword = passwordEncoder.encode(clientDetailsModel.getSecret());
         clientDetailsModel.setSecret(BcryptPassword);
-        clientDetailsCassandraDao.save(clientDetailsModel);
+        ResultSet rs = clientDetailsCassandraDao.save(clientDetailsModel);
+        if (!rs.wasApplied())
+            throw new ApplicationException("Client record already exists");
     }
 
     @Override

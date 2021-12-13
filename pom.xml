@@ -42,10 +42,6 @@
             <artifactId>java-driver-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-cassandra</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.datastax.oss</groupId>
             <artifactId>java-driver-mapper-processor</artifactId>
         </dependency>
@@ -57,6 +53,10 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
     </dependencies>
 
@@ -88,9 +88,9 @@
                         <!-- Optional: add this if you want to avoid the SLF4J warning "Failed to load class
                           StaticLoggerBinder, defaulting to no-operation implementation" when compiling. -->
                         <path>
-                            <groupId>org.slf4j</groupId>
-                            <artifactId>slf4j-nop</artifactId>
-                            <version>${slf4j.version}</version>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
