@@ -1,32 +1,24 @@
 package com.auth.server.config;
 
 import com.auth.server.model.UserDetailsModel;
-import com.auth.server.model.UserRoles;
-import com.auth.server.repository.UserDetailsRepository;
-import com.auth.server.repository.UserRolesRepository;
+import com.auth.server.repository.UserDetailsCassandraDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
-
 @Component
 public class UserDetailsManagerImpl implements UserDetailsService {
 
     @Autowired
-    private UserDetailsRepository userDetailsRepository;
-
-    @Autowired
-    private UserRolesRepository userRolesRepository;
+    private UserDetailsCassandraDao userDetailsRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserDetailsModel> userDetails = userDetailsRepository.findById(username);
-        Optional<UserRoles> userRoles = userRolesRepository.findById(username);
-        if (userDetails.isEmpty() || userRoles.isEmpty())
+        UserDetailsModel userDetails = userDetailsRepository.findByUser(username);
+        if (userDetails == null)
             throw new UsernameNotFoundException("Incorrect Username or Password");
-        return new UserDetailsImpl(userDetails.get(), userRoles.get());
+        return new UserDetailsImpl(userDetails);
     }
 }

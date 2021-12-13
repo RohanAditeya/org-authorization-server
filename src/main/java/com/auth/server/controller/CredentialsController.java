@@ -1,9 +1,7 @@
 package com.auth.server.controller;
 
 import com.auth.server.model.ClientDetailsModel;
-import com.auth.server.model.ClientResourceModel;
 import com.auth.server.model.UserDetailsModel;
-import com.auth.server.util.AuthorizationGrantTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,12 +12,11 @@ public interface CredentialsController {
     ResponseEntity<UserDetailsModel> getUserDetails(String username);
 
     @PostMapping("/user/details")
-    ResponseEntity<UserDetailsModel> onBoardCredentials(UserDetailsModel userDetails, String userRoles);
+    ResponseEntity<UserDetailsModel> onBoardCredentials(UserDetailsModel userDetails);
 
     @PostMapping("/client/details")
-    ResponseEntity<ClientDetailsModel> onBoardClientCredentials(ClientDetailsModel clientDetails, AuthorizationGrantTypes clientGrantType);
+    ResponseEntity<ClientDetailsModel> onBoardClientCredentials(ClientDetailsModel clientDetails);
 
     @PostMapping("/resource/details")
-    ResponseEntity<ClientResourceModel> onBoardResourceApp(ClientResourceModel clientResourceModel);
-
+    ResponseEntity<ClientDetailsModel> onBoardResourceApp(String clientId, String resourceId);
 }

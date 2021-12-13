@@ -1,12 +1,19 @@
 package com.auth.server.model;
 
-import javax.persistence.*;
+import com.datastax.oss.driver.api.mapper.annotations.*;
+import com.datastax.oss.driver.api.mapper.entity.naming.NamingConvention;
 
-@Entity(name = "client_details")
+@Entity
+@CqlName(value = "client_details")
+@NamingStrategy(convention = NamingConvention.SNAKE_CASE_INSENSITIVE)
 public class ClientDetailsModel {
 
-    @Id
+    @PartitionKey
     private String clientId;
+    @ClusteringColumn(value = 0)
+    private String resourceId;
+    @ClusteringColumn(value = 1)
+    private String grantType;
     private String secret;
     private String scope;
 
@@ -18,12 +25,28 @@ public class ClientDetailsModel {
         this.clientId = clientId;
     }
 
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
+    }
+
     public String getSecret() {
         return secret;
     }
 
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public String getGrantType() {
+        return grantType;
+    }
+
+    public void setGrantType(String grantType) {
+        this.grantType = grantType;
     }
 
     public String getScope() {

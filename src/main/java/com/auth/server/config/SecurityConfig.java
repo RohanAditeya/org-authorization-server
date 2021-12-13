@@ -21,7 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic();
         http.csrf().disable().authorizeRequests()
-                .mvcMatchers("**/encode")
+                .mvcMatchers("/ping", "**/encode")
                 .permitAll()
                 .mvcMatchers(HttpMethod.POST, "/*/details")
                 .hasRole("ADMIN")

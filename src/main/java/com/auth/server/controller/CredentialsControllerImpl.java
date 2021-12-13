@@ -1,11 +1,10 @@
 package com.auth.server.controller;
 
 import com.auth.server.model.ClientDetailsModel;
-import com.auth.server.model.ClientResourceModel;
 import com.auth.server.model.UserDetailsModel;
 import com.auth.server.service.CredentialsService;
-import com.auth.server.util.AuthorizationGrantTypes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -19,26 +18,25 @@ public class CredentialsControllerImpl implements CredentialsController{
 
     @Override
     public ResponseEntity<UserDetailsModel> getUserDetails(@RequestHeader String username) {
-        UserDetailsModel userDetails = credentialsService.getUserDetailsFromDb(username);
-        return ResponseEntity.ok(userDetails);
+        UserDetailsModel record = credentialsService.getUserDetailsFromDb(username);
+        return ResponseEntity.ok(record);
     }
 
     @Override
-    public ResponseEntity<UserDetailsModel> onBoardCredentials(@RequestBody UserDetailsModel userDetails, @RequestHeader String userRoles) {
-        userDetails = credentialsService.onBoardUserCredentials(userDetails, userRoles);
-        return ResponseEntity.ok(userDetails);
+    public ResponseEntity<UserDetailsModel> onBoardCredentials(@RequestBody UserDetailsModel userDetails) {
+        credentialsService.onBoardUserCredentials(userDetails);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
-    public ResponseEntity<ClientDetailsModel> onBoardClientCredentials(@RequestBody ClientDetailsModel clientDetails,
-                                                                       @RequestHeader AuthorizationGrantTypes clientGrantType) {
-        clientDetails = credentialsService.onBoardClientDetails(clientDetails, clientGrantType);
-        return ResponseEntity.ok(clientDetails);
+    public ResponseEntity<ClientDetailsModel> onBoardClientCredentials(@RequestBody ClientDetailsModel clientDetails) {
+        credentialsService.onBoardClientDetails(clientDetails);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Override
-    public ResponseEntity<ClientResourceModel> onBoardResourceApp(@RequestBody ClientResourceModel clientResourceModel) {
-        clientResourceModel = credentialsService.onBoardResourceApp(clientResourceModel);
-        return ResponseEntity.ok(clientResourceModel);
+    public ResponseEntity<ClientDetailsModel> onBoardResourceApp(@RequestHeader String clientId, @RequestHeader String resourceId) {
+        credentialsService.onBoardResourceApp(clientId, resourceId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

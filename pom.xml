@@ -18,6 +18,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <spring-cloud-dependencies.version>2021.0.0</spring-cloud-dependencies.version>
+<!--        <cassandra-driver.version>4.11.3</cassandra-driver.version>-->
     </properties>
 
     <dependencies>
@@ -35,14 +36,22 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-<!--                        jdbc dependencies                                       -->
+<!--                        database dependencies                                       -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <groupId>com.datastax.oss</groupId>
+            <artifactId>java-driver-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-cassandra</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.oss</groupId>
+            <artifactId>java-driver-mapper-processor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.oss</groupId>
+            <artifactId>java-driver-mapper-runtime</artifactId>
         </dependency>
 <!--                     utils                                                     -->
         <dependency>
@@ -62,5 +71,31 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.datastax.oss</groupId>
+                            <artifactId>java-driver-mapper-processor</artifactId>
+                            <version>${cassandra-driver.version}</version>
+                        </path>
+                        <!-- Optional: add this if you want to avoid the SLF4J warning "Failed to load class
+                          StaticLoggerBinder, defaulting to no-operation implementation" when compiling. -->
+                        <path>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>slf4j-nop</artifactId>
+                            <version>${slf4j.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
