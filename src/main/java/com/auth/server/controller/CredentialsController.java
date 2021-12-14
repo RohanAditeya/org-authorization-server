@@ -19,5 +19,5 @@ public interface CredentialsController {
     ResponseEntity<ClientDetailsModel> onBoardClientCredentials(ClientDetailsModel clientDetails) throws ApplicationException;
 
     @PostMapping("/resource/details")
-    ResponseEntity<ClientDetailsModel> onBoardResourceApp(String clientId, String resourceId);
+    ResponseEntity<ClientDetailsModel> onBoardResourceApp(String clientId, String resourceId) throws ApplicationException;
 }

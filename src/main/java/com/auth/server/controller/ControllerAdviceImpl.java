@@ -18,7 +18,7 @@ import java.util.Map;
 public class ControllerAdviceImpl {
 
     @ExceptionHandler(value = {ApplicationException.class})
-    public ResponseEntity<String> UserRecordNotFound (ApplicationException exception) {
+    public ResponseEntity<String> userRecordNotFound(ApplicationException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 
@@ -30,7 +30,9 @@ public class ControllerAdviceImpl {
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ResponseEntity<Map<String, String>> validationFailedException (MethodArgumentNotValidException exception) {
         Map<String, String> errors = new HashMap<>();
-        exception.getBindingResult().getAllErrors().forEach(objectError -> {
+        exception.getBindingResult()
+                .getAllErrors()
+                .forEach(objectError -> {
             String fieldName = ((FieldError) objectError).getField();
             String error = objectError.getDefaultMessage();
             errors.put(fieldName, error);

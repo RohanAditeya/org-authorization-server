@@ -4,7 +4,6 @@ import com.auth.server.model.ClientDetailsModel;
 import com.auth.server.model.UserDetailsModel;
 import com.auth.server.service.CredentialsService;
 import com.auth.server.util.ApplicationException;
-import com.auth.server.util.ConstantValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +38,7 @@ public class CredentialsControllerImpl implements CredentialsController{
     }
 
     @Override
-    public ResponseEntity<ClientDetailsModel> onBoardResourceApp(@RequestHeader String clientId, @RequestHeader String resourceId) {
+    public ResponseEntity<ClientDetailsModel> onBoardResourceApp(@RequestHeader String clientId, @RequestHeader String resourceId) throws ApplicationException {
         credentialsService.onBoardResourceApp(clientId, resourceId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

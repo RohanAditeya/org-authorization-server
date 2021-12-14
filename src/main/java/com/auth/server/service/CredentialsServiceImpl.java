@@ -49,8 +49,10 @@ public class CredentialsServiceImpl implements CredentialsService{
     }
 
     @Override
-    public void onBoardResourceApp(String clientId, String resourceId) {
+    public void onBoardResourceApp(String clientId, String resourceId) throws ApplicationException {
         ClientDetailsModel record = clientDetailsCassandraDao.findByClientId(clientId);
+        if (record == null)
+            throw new ApplicationException("Client not found, cannot add resource");
         record.setResourceId(resourceId);
         clientDetailsCassandraDao.save(record);
     }

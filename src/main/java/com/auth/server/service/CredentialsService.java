@@ -8,5 +8,5 @@ public interface CredentialsService {
     UserDetailsModel getUserDetailsFromDb(String username) throws ApplicationException;
     void onBoardUserCredentials(UserDetailsModel userDetails) throws ApplicationException;
     void onBoardClientDetails(ClientDetailsModel clientDetailsModel) throws ApplicationException;
-    void onBoardResourceApp(String clientId, String resourceId);
+    void onBoardResourceApp(String clientId, String resourceId) throws ApplicationException;
 }
