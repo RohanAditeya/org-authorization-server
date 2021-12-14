@@ -2,24 +2,22 @@
 ***
 # Set up App
 ***
-## MySql set up
-To connect to mySql server define the properties in yml property file like so
+## Cassandra set up
+To connect to cassandra nodes define the properties in yml property file like so
+in application.yml file
 ```yaml
-  datasource:
-    url: <url>
-    username: <username>
-    password: <password>
+    cassandra:
+      keyspace-name: authorization_keyspace
+      contact-points: localhost
+      local-datacenter: datacenter1
 ```
-Before starting the app you will need a user with role ADMIN to send requests
-to endpoints of this api.
-Fill the user details you want to be stored first with ADMIN access in the
-schema.sql file which has the following sample insert statements
-The password must be Bcrypt encrypted string.
+To call the endpoints you will need a user registered in the database that you can
+do using the following CQL statement. To get the Bcrype encoded string you can
+use http://localhost:8081/bcrypt/encode endpoint that permits all requests without
+authentication
 ```roomsql
-INSERT INTO user_details ("<usernmae>", "<password>", 1);
-INSERT INTO user_roles ("<username>", "ROLE_ADMIN");
+INSERT INTO user_details (username, roles, enabled, password) VALUES('<username>', 'ROLE_ADMIN', true, '<BcryptEncodedPassword>');
 ```
-and uncomment them when running the app for the first time
 ## Generating Asymmetric keys for JWT token generation and authentication
 To generate the keys you will need openssl(comes with git) and keytool(comes with java jdk)
 run the following commands after replacing the <> placeholders with their
@@ -48,12 +46,15 @@ boot app and by default the app runs at port 8081**
 To generate JWT token you need to onboard the credentials of the app that will
 act as the client that sends a request for a JWT token.
 You can onboard them by passing a post request to the endpoint 
-http://localhost:8081/client/details with the following body sample
+http://localhost:8081/client/details with the following body sample.
+We need to add resource id that will be added to the JWT token which will be used
+to authenticate resource server that the JWT token is used on.
 ```json
 {
   "clientId": "<client-id>",
   "secret": "<client-secret>",
-  "scope": "<scope>"
+  "scope": "<scope>",
+  "resourceId": "<id-for-resource-app>"
 }
 ```
 the app only supports password grant_type for now so grantType is always
@@ -61,11 +62,10 @@ password therefore pass the header **clientGrantType** as password and pass
 the Authorization credentials as header to authenticate the request.
 The Authorization header is the credentials of the user you had added.
 Pass the request using postman and the client details are added.
-## Onboard resource id
-We need to add resource id that will be added to the JWT token which will be used
-to authenticate resource server that the JWT token is used on.
+## Onboard resource id (Optional)
+To add another resource id for the same client id use this endpoint
 Use the http://localhost:8081/resource/details to onboard resource details
-The post request must have the following body
+The post request must have the following headers
 ```json
 {
     "clientId": "<client-id the resource must be associated to>",

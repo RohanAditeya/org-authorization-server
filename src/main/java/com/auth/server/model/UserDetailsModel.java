@@ -1,13 +1,25 @@
 package com.auth.server.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import com.auth.server.util.ConstantValidation;
+import com.auth.server.util.Constants;
+import com.datastax.oss.driver.api.mapper.annotations.*;
+import com.datastax.oss.driver.api.mapper.entity.naming.NamingConvention;
 
-@Entity(name = "user_details")
+import javax.validation.constraints.NotNull;
+
+
+@Entity
+@CqlName(value = "user_details")
+@NamingStrategy(convention = NamingConvention.SNAKE_CASE_INSENSITIVE)
 public class UserDetailsModel {
 
-    @Id
+    @PartitionKey
     private String username;
+    @ClusteringColumn
+    @CqlName(value = "roles")
+    @ConstantValidation(allowedConstants = {Constants.ADMIN, Constants.MANAGER}, message = "Role can take only one of {'ROLE_ADMIN','ROLE_MANAGER'} values")
+    private String role;
+    @NotNull(message = "user password cannot be null")
     private String password;
     private boolean enabled;
 
@@ -17,6 +29,14 @@ public class UserDetailsModel {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getPassword() {

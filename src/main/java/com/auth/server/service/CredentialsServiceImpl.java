@@ -1,73 +1,59 @@
 package com.auth.server.service;
 
 import com.auth.server.model.ClientDetailsModel;
-import com.auth.server.model.ClientGrantType;
-import com.auth.server.model.ClientResourceModel;
 import com.auth.server.model.UserDetailsModel;
-import com.auth.server.repository.*;
-import com.auth.server.util.AuthorizationGrantTypes;
-import com.auth.server.util.UserRoleBuilder;
+import com.auth.server.repository.ClientDetailsCassandraDao;
+import com.auth.server.repository.UserDetailsCassandraDao;
+import com.auth.server.util.ApplicationException;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.Optional;
 
 @Service
 public class CredentialsServiceImpl implements CredentialsService{
 
     @Autowired
+    private UserDetailsCassandraDao userDetailsCassandraDao;
+
+    @Autowired
+    private ClientDetailsCassandraDao clientDetailsCassandraDao;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    UserRoleBuilder userRoleBuilder;
-
-    @Autowired
-    private UserDetailsRepository userDetailsRepository;
-
-    @Autowired
-    private UserRolesRepository userRolesRepository;
-
-    @Autowired
-    private ClientDetailsRepository clientDetailsRepository;
-
-    @Autowired
-    private ClientGrantTypeRepository clientGrantTypeRepository;
-
-    @Autowired
-    private ClientResourceRepository clientResourceRepository;
-
     @Override
-    public UserDetailsModel getUserDetailsFromDb(String username) {
-        Optional<UserDetailsModel> userDetails = userDetailsRepository.findById(username);
-        return userDetails.get();
+    public UserDetailsModel getUserDetailsFromDb(String username) throws ApplicationException {
+        UserDetailsModel record = userDetailsCassandraDao.findByUser(username);
+        if (record == null)
+            throw new ApplicationException("Requested username not found");
+        return record;
     }
 
     @Override
-    public UserDetailsModel onBoardUserCredentials(UserDetailsModel userDetails, String role) {
-        String encodedPassword = passwordEncoder.encode(userDetails.getPassword());
-        userDetails.setPassword(encodedPassword);
-        userDetailsRepository.save(userDetails);
-        userRolesRepository.save(userRoleBuilder.setRole(role).setUserDetails(userDetails.getUsername()).build());
-        return userDetails;
+    public void onBoardUserCredentials(UserDetailsModel userDetails) throws ApplicationException {
+        String BcryptPassword = passwordEncoder.encode(userDetails.getPassword());
+        userDetails.setPassword(BcryptPassword);
+        ResultSet rs = userDetailsCassandraDao.save(userDetails);
+        if (!rs.wasApplied())
+            throw new ApplicationException("User record already exists");
     }
 
     @Override
-    public ClientDetailsModel onBoardClientDetails(ClientDetailsModel clientDetailsModel, AuthorizationGrantTypes clientGrantType) {
-        String encodedPassword = passwordEncoder.encode(clientDetailsModel.getSecret());
-        clientDetailsModel.setSecret(encodedPassword);
-        clientDetailsRepository.save(clientDetailsModel);
-        ClientGrantType clientGrantTypeRecord = new ClientGrantType();
-        clientGrantTypeRecord.setClientId(clientDetailsModel.getClientId());
-        clientGrantTypeRecord.setGrantType(clientGrantType);
-        clientGrantTypeRepository.save(clientGrantTypeRecord);
-        return clientDetailsModel;
+    public void onBoardClientDetails(ClientDetailsModel clientDetailsModel) throws ApplicationException {
+        String BcryptPassword = passwordEncoder.encode(clientDetailsModel.getSecret());
+        clientDetailsModel.setSecret(BcryptPassword);
+        ResultSet rs = clientDetailsCassandraDao.save(clientDetailsModel);
+        if (!rs.wasApplied())
+            throw new ApplicationException("Client record already exists");
     }
 
     @Override
-    public ClientResourceModel onBoardResourceApp(@RequestBody ClientResourceModel clientResourceModel) {
-        clientResourceRepository.save(clientResourceModel);
-        return clientResourceModel;
+    public void onBoardResourceApp(String clientId, String resourceId) throws ApplicationException {
+        ClientDetailsModel record = clientDetailsCassandraDao.findByClientId(clientId);
+        if (record == null)
+            throw new ApplicationException("Client not found, cannot add resource");
+        record.setResourceId(resourceId);
+        clientDetailsCassandraDao.save(record);
     }
 }
